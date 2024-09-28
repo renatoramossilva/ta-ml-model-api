@@ -13,9 +13,14 @@ RUN pip install --no-cache-dir poetry && \
 # Copy the rest of the application code to the working directory
 COPY . .
 
-# Expose the port that the app runs on
-EXPOSE 5000
+# Run tests
+RUN coverage run -m pytest
 
-# Command to run the application
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Export test coverage to HTML file
+RUN coverage html
 
+# Expose the ports that the app/coverage runs on
+EXPOSE 5000 8000
+
+# Star flask and coverage page
+CMD ["sh", "-c", "flask run --host=0.0.0.0 & python -m http.server 8000 --directory htmlcov"]
