@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 Flask = "^3.0.3"
 pytest = "^8.3.3"
+onnxruntime = "^1.19.2"
 
 
 [tool.poetry.group.dev.dependencies]
