@@ -43,7 +43,7 @@ def init_routes(app):
         """ 
         data = request.get_json()
         # Check input received
-        if data is None:
+        if not data:
             return jsonify({"error": "No data provided"}), 400
 
         required_inputs = ['Material_A_Charged_Amount', 'Material_B_Charged_Amount', 'Reactor_Volume', 'Material_A_Final_Concentration_Previous_Batch']
@@ -76,44 +76,6 @@ def init_routes(app):
         # Return predict
         return jsonify(response)
 
-
-    @app.route('/predict-dry-run', methods=['POST'])
-    def predict_dry_run() -> Tuple[Dict[str, Any], int]:
-        """
-        Handle the dry run prediction request for the ML model.
-
-        This endpoint simulates a prediction without executing the actual model inference.
-        It verifies the presence of input parameters and returns a success message along 
-        with the received data.
-
-        Request:
-            JSON format with the following structure:
-            - input: A dictionary containing the required input parameters for the 
-            dry run of the model prediction. The expected fields depend on your 
-            specific application.
-
-        Response:
-            On success:
-                - message: A confirmation message indicating that the dry run was successful.
-                - received: The original input data received.
-
-            On error:
-                - error: A message indicating that the required 'input' key is missing.
-
-        Returns:
-            A tuple containing:
-            - A JSON response with either the success message and received data or 
-            an error message if the input data is invalid.
-            - An HTTP status code (int), indicating the result of the request.
-        """
-        data = request.get_json()
-        
-        # Check input data
-        if 'input' not in data:
-            return jsonify({"error": "Missing 'input' key"}), 400
-        
-        return jsonify({"message": "Dry run successful", "received": data})
-    
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,4 +1,5 @@
 import pytest
+import json
 from app import create_app
 
 @pytest.fixture
@@ -22,6 +23,12 @@ def test_predict_success(client):
     assert response.status_code == 200
     json_data = response.get_json()
     assert "prediction" in json_data 
+
+
+def test_predict_no_data(client):
+    response = client.post('/predict', data=json.dumps({}), content_type='application/json')
+    assert response.status_code == 400
+    assert response.get_json() == {"error": "No data provided"}
 
 
 @pytest.mark.parametrize(
