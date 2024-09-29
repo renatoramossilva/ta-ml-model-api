@@ -1,4 +1,5 @@
 """Defines the application routes for the Flask app."""
+
 from typing import Dict, Any, Tuple
 from flask import Flask, request, jsonify
 import onnxruntime
@@ -16,6 +17,7 @@ ort_session = onnxruntime.InferenceSession(MODEL_PATH)
 
 def init_routes(flask_app):
     """Initialize routes for the Flask application."""
+
     @flask_app.route("/")
     def home():
         return "Hello, Flask!"
@@ -65,7 +67,7 @@ def init_routes(flask_app):
 
         # Run predict
         ort_inputs = {
-            ort_session.get_inputs()[i].name: input_data[i: i + 1]
+            ort_session.get_inputs()[i].name: input_data[i : i + 1]
             for i in range(len(input_data))
         }
         output = ort_session.run(None, ort_inputs)
