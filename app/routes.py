@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 import onnxruntime
 import numpy as np
+from pydantic import ValidationError
+from .schemas import PredictInput
 from typing import Dict, Any, Tuple
  
 
@@ -41,22 +43,16 @@ def init_routes(app):
             A JSON response with either the prediction and confidence scores or 
             an error message if no data is provided.
         """ 
-        data = request.get_json()
-        # Check input received
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
+        try:
+            data = PredictInput(**request.get_json())
+        except ValidationError as e:
+            return jsonify({"error": e.errors()}), 400
 
-        required_inputs = ['Material_A_Charged_Amount', 'Material_B_Charged_Amount', 'Reactor_Volume', 'Material_A_Final_Concentration_Previous_Batch']
-        
-        for input_name in required_inputs:
-            if input_name not in data:
-                return jsonify({"error": f"Missing required input: {input_name}"}), 400
-        
         inputs = [
-            data['Material_A_Charged_Amount'],
-            data['Material_B_Charged_Amount'],
-            data['Reactor_Volume'],
-            data['Material_A_Final_Concentration_Previous_Batch']
+            data.Material_A_Charged_Amount,
+            data.Material_B_Charged_Amount,
+            data.Reactor_Volume,
+            data.Material_A_Final_Concentration_Previous_Batch
         ]
 
         # Prepare input data to be used by the model
