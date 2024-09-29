@@ -3,10 +3,11 @@ import json
 from app import create_app
 from flask.testing import FlaskClient
 
+
 @pytest.fixture
 def client():
-    app = create_app()  
-    app.config['TESTING'] = True
+    app = create_app()
+    app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
 
@@ -23,13 +24,13 @@ def test_predict_success(client: FlaskClient) -> None:
         "Material_A_Charged_Amount": [[10]],
         "Material_B_Charged_Amount": [[20]],
         "Reactor_Volume": [[30]],
-        "Material_A_Final_Concentration_Previous_Batch": [[40]]
+        "Material_A_Final_Concentration_Previous_Batch": [[40]],
     }
 
-    response = client.post('/predict', json=valid_data)
+    response = client.post("/predict", json=valid_data)
     assert response.status_code == 200
     json_data = response.get_json()
-    assert "prediction" in json_data 
+    assert "prediction" in json_data
 
 
 def test_predict_no_data(client: FlaskClient) -> None:
@@ -41,39 +42,41 @@ def test_predict_no_data(client: FlaskClient) -> None:
         - The response contains detailed error messages indicating
           that all required fields are missing.
     """
-    response = client.post('/predict', data=json.dumps({}), content_type='application/json')
+    response = client.post(
+        "/predict", data=json.dumps({}), content_type="application/json"
+    )
     assert response.status_code == 400
     json_data = response.get_json()
 
     expected_errors = {
-        'error': [
+        "error": [
             {
-                'input': {},
-                'loc': ['Material_A_Charged_Amount'],
-                'msg': 'Field required',
-                'type': 'missing',
-                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+                "input": {},
+                "loc": ["Material_A_Charged_Amount"],
+                "msg": "Field required",
+                "type": "missing",
+                "url": "https://errors.pydantic.dev/2.9/v/missing",
             },
             {
-                'input': {},
-                'loc': ['Material_B_Charged_Amount'],
-                'msg': 'Field required',
-                'type': 'missing',
-                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+                "input": {},
+                "loc": ["Material_B_Charged_Amount"],
+                "msg": "Field required",
+                "type": "missing",
+                "url": "https://errors.pydantic.dev/2.9/v/missing",
             },
             {
-                'input': {},
-                'loc': ['Reactor_Volume'],
-                'msg': 'Field required',
-                'type': 'missing',
-                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+                "input": {},
+                "loc": ["Reactor_Volume"],
+                "msg": "Field required",
+                "type": "missing",
+                "url": "https://errors.pydantic.dev/2.9/v/missing",
             },
             {
-                'input': {},
-                'loc': ['Material_A_Final_Concentration_Previous_Batch'],
-                'msg': 'Field required',
-                'type': 'missing',
-                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+                "input": {},
+                "loc": ["Material_A_Final_Concentration_Previous_Batch"],
+                "msg": "Field required",
+                "type": "missing",
+                "url": "https://errors.pydantic.dev/2.9/v/missing",
             },
         ]
     }
@@ -88,7 +91,7 @@ def test_predict_no_data(client: FlaskClient) -> None:
             {
                 "Material_B_Charged_Amount": [[20]],
                 "Reactor_Volume": [[30]],
-                "Material_A_Final_Concentration_Previous_Batch": [[40]]
+                "Material_A_Final_Concentration_Previous_Batch": [[40]],
             },
             "Material_A_Charged_Amount",
         ),
@@ -96,7 +99,7 @@ def test_predict_no_data(client: FlaskClient) -> None:
             {
                 "Material_A_Charged_Amount": [[10]],
                 "Reactor_Volume": [[30]],
-                "Material_A_Final_Concentration_Previous_Batch": [[40]]
+                "Material_A_Final_Concentration_Previous_Batch": [[40]],
             },
             "Material_B_Charged_Amount",
         ),
@@ -104,7 +107,7 @@ def test_predict_no_data(client: FlaskClient) -> None:
             {
                 "Material_A_Charged_Amount": [[10]],
                 "Material_B_Charged_Amount": [[20]],
-                "Material_A_Final_Concentration_Previous_Batch": [[40]]
+                "Material_A_Final_Concentration_Previous_Batch": [[40]],
             },
             "Reactor_Volume",
         ),
@@ -116,31 +119,32 @@ def test_predict_no_data(client: FlaskClient) -> None:
             },
             "Material_A_Final_Concentration_Previous_Batch",
         ),
-    ]
+    ],
 )
-def test_predict_missing_required_input(client: FlaskClient, incomplete_data: dict, field_missing: str) -> None:
+def test_predict_missing_required_input(
+    client: FlaskClient, incomplete_data: dict, field_missing: str
+) -> None:
     """
     Test the /predict endpoint for missing required input fields.
 
     Uses parameterized inputs to send POST requests with incomplete data.
-    Asserts that the response status code is 400 and checks that the error message 
+    Asserts that the response status code is 400 and checks that the error message
     correctly identifies the missing required field.
 
     Parameters:
         incomplete_data: The JSON data to send in the request, missing one required field.
         field_missing: The name of the field that is expected to be missing in the request.
-    """    
-    response = client.post('/predict', json=incomplete_data)
+    """
+    response = client.post("/predict", json=incomplete_data)
     assert response.status_code == 400
     json_data = response.get_json()
 
     expected_error = {
-        'input': incomplete_data,
-        'loc': [field_missing],
-        'msg': 'Field required',
-        'type': 'missing',
-        'url': 'https://errors.pydantic.dev/2.9/v/missing',
+        "input": incomplete_data,
+        "loc": [field_missing],
+        "msg": "Field required",
+        "type": "missing",
+        "url": "https://errors.pydantic.dev/2.9/v/missing",
     }
 
-    assert expected_error in json_data['error']
-
+    assert expected_error in json_data["error"]
