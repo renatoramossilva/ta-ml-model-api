@@ -2,12 +2,12 @@
 
 # pylint: disable=broad-exception-caught
 
-from typing import Tuple
 
 import numpy as np
 import onnxruntime  # type: ignore
 from flask import Blueprint, Flask, Response, jsonify, request
 from pydantic import ValidationError
+from typing import Tuple
 
 from .schemas import PredictInput
 
