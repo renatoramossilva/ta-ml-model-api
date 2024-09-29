@@ -1,11 +1,16 @@
-import pytest
+# pylint: disable=redefined-outer-name
+"""
+Tests for the predict route in the Flask application.
+"""
 import json
-from app import create_app
+import pytest
 from flask.testing import FlaskClient
+from app import create_app
 
 
 @pytest.fixture
 def client():
+    """Create a test client for the Flask application."""
     app = create_app()
     app.config["TESTING"] = True
     with app.test_client() as client:

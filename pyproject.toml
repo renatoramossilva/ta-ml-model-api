@@ -17,8 +17,6 @@ pylint = "^3.3.1"
 isort = "^5.13.2"
 
 
-[tool.poetry.group.dev.dependencies]
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -1,24 +1,26 @@
+"""Defines the application routes for the Flask app."""
+from typing import Dict, Any, Tuple
 from flask import Flask, request, jsonify
 import onnxruntime
 import numpy as np
 from pydantic import ValidationError
 from .schemas import PredictInput
-from typing import Dict, Any, Tuple
 
 
 app = Flask(__name__)
 
 # Load the ONNX model globally
-model_path = "models/model.onnx"
-ort_session = onnxruntime.InferenceSession(model_path)
+MODEL_PATH = "models/model.onnx"
+ort_session = onnxruntime.InferenceSession(MODEL_PATH)
 
 
-def init_routes(app):
-    @app.route("/")
+def init_routes(flask_app):
+    """Initialize routes for the Flask application."""
+    @flask_app.route("/")
     def home():
         return "Hello, Flask!"
 
-    @app.route("/predict", methods=["POST"])
+    @flask_app.route("/predict", methods=["POST"])
     def predict() -> Tuple[Dict[str, Any], int]:
         """
         Handle the prediction request for the ML model.
@@ -63,7 +65,7 @@ def init_routes(app):
 
         # Run predict
         ort_inputs = {
-            ort_session.get_inputs()[i].name: input_data[i : i + 1]
+            ort_session.get_inputs()[i].name: input_data[i: i + 1]
             for i in range(len(input_data))
         }
         output = ort_session.run(None, ort_inputs)
