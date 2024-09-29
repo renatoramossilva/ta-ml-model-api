@@ -4,6 +4,7 @@ Unit tests for basic functionality of the Flask application.
 """
 import pytest
 from flask.testing import FlaskClient
+
 from app import create_app
 
 

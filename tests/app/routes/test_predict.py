@@ -3,8 +3,10 @@
 Tests for the predict route in the Flask application.
 """
 import json
+
 import pytest
 from flask.testing import FlaskClient
+
 from app import create_app
 
 

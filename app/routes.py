@@ -1,12 +1,13 @@
 """Defines the application routes for the Flask app."""
 
-from typing import Dict, Any, Tuple
-from flask import Flask, request, jsonify
-import onnxruntime
-import numpy as np
-from pydantic import ValidationError
-from .schemas import PredictInput
+from typing import Any, Dict, Tuple
 
+import numpy as np
+import onnxruntime
+from flask import Flask, jsonify, request
+from pydantic import ValidationError
+
+from .schemas import PredictInput
 
 app = Flask(__name__)
 

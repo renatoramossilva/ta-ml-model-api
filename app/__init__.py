@@ -3,6 +3,7 @@ Initialization module for the application.
 """
 
 from flask import Flask
+
 from .routes import init_routes
 
 
