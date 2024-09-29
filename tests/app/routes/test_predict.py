@@ -43,7 +43,42 @@ def test_predict_no_data(client: FlaskClient) -> None:
     """
     response = client.post('/predict', data=json.dumps({}), content_type='application/json')
     assert response.status_code == 400
-    assert response.get_json() == {"error": "No data provided"}
+    json_data = response.get_json()
+
+    expected_errors = {
+        'error': [
+            {
+                'input': {},
+                'loc': ['Material_A_Charged_Amount'],
+                'msg': 'Field required',
+                'type': 'missing',
+                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+            },
+            {
+                'input': {},
+                'loc': ['Material_B_Charged_Amount'],
+                'msg': 'Field required',
+                'type': 'missing',
+                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+            },
+            {
+                'input': {},
+                'loc': ['Reactor_Volume'],
+                'msg': 'Field required',
+                'type': 'missing',
+                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+            },
+            {
+                'input': {},
+                'loc': ['Material_A_Final_Concentration_Previous_Batch'],
+                'msg': 'Field required',
+                'type': 'missing',
+                'url': 'https://errors.pydantic.dev/2.9/v/missing',
+            },
+        ]
+    }
+
+    assert json_data == expected_errors
 
 
 @pytest.mark.parametrize(
@@ -98,4 +133,14 @@ def test_predict_missing_required_input(client: FlaskClient, incomplete_data: di
     response = client.post('/predict', json=incomplete_data)
     assert response.status_code == 400
     json_data = response.get_json()
-    assert f"Missing required input: {field_missing}" in json_data["error"]
+
+    expected_error = {
+        'input': incomplete_data,
+        'loc': [field_missing],
+        'msg': 'Field required',
+        'type': 'missing',
+        'url': 'https://errors.pydantic.dev/2.9/v/missing',
+    }
+
+    assert expected_error in json_data['error']
+
