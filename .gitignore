@@ -4,3 +4,4 @@ __pycache__/
 # Python: Tools cache
 .pytest_cache/
 .tox/
+.mypy_cache
