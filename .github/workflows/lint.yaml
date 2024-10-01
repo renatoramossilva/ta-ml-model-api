@@ -38,5 +38,6 @@ jobs:
         run: |
             poetry run isort --check-only .  # Check import sorting without making changes
 
-      - name: Run tests
-        run: PYTHONPATH=. poetry run pytest -vvv
+      - name: Run Tox
+        run: |
+            poetry run tox
