@@ -1,10 +1,10 @@
 """Defines the application routes for the Flask app."""
 
-from typing import Any, Dict, Tuple
+from typing import Tuple
 
 import numpy as np
-import onnxruntime
-from flask import Flask, jsonify, request
+import onnxruntime  # type: ignore
+from flask import Flask, Response, jsonify, request
 from pydantic import ValidationError
 
 from .schemas import PredictInput
@@ -24,7 +24,7 @@ def init_routes(flask_app):
         return "Hello, Flask!"
 
     @flask_app.route("/predict", methods=["POST"])
-    def predict() -> Tuple[Dict[str, Any], int]:
+    def predict() -> Tuple[Response, int]:
         """
         Handle the prediction request for the ML model.
 
@@ -81,7 +81,7 @@ def init_routes(flask_app):
         }
 
         # Return predict
-        return jsonify(response)
+        return jsonify(response), 200
 
 
 if __name__ == "__main__":
