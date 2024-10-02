@@ -21,8 +21,8 @@ This repository provides a solution for deploying a Machine Learning model as a 
 
 - `/app`: Contains the main Flask application files.
 - `/tests`: Unit tests for the API.
-- `models`: Contains the Pre-trained ONNX model for inference.
-- `docker/`: Docker configuration files.
+- `/models`: Contains the Pre-trained ONNX model for inference.
+- `/docker`: Docker configuration files.
 
 
 ## API Documentation
@@ -54,19 +54,16 @@ Before you begin, ensure you have the following prerequisites installed on your 
 
 This project uses [Poetry](https://python-poetry.org/) for dependency management. Poetry simplifies the process of managing dependencies and packaging Python projects.
 
-docOnce installed, you can easily manage dependencies by running `poetry add <dependency>` to add the new dependency and `poetry install`, which installs all required packages listed in the [`pyproject.toml`](pyproject.toml)
+Once installed, you can easily manage dependencies by running `poetry add <dependency>` to add the new dependency and `poetry install`, which installs all required packages listed in the [`pyproject.toml`](pyproject.toml)
  file.
 
 
 ## Project setup
 
-#### Clone the Repository
 Clone this repository to your local machine:
 
 `git clone https://github.com/renatoramossilva/ta-ml-model-api.git`
 
-
-#### Install Dependencies
 Navigate to the project directory and install the dependencies using Poetry:
 
 ```bash
@@ -74,14 +71,10 @@ cd ta-ml-model-api
 poetry install
 ```
 
-
-#### Activate the Virtual Environment
 To activate the virtual environment created by Poetry, run:
 
 `poetry shell`
 
-
-#### Run the Application
 You can now run the application using Docker or directly using Flask.
 
 To run with Docker, use:
@@ -124,10 +117,13 @@ curl -X POST http://127.0.0.1:5001/predict \
 ```
 
 Expected output:
+
 e.g.
 
-```bash
-{"prediction":["High"]}
+```json
+{
+    "prediction":["High"]
+}
 ```
 
 
@@ -148,17 +144,11 @@ To manually run these tools, you can use the following commands:
 
 ## Unit Tests
 
-This project includes a comprehensive suite of unit tests to ensure the correctness of the API and underlying code. We aim for a [high test coverage, with results consistently close to 100%](http://localhost:8000). The unit tests are executed using `pytest` along with `pytest-cov` for test coverage reporting.
-
-#### Running Unit Tests
+This project includes a comprehensive suite of unit tests to ensure the correctness of the API and underlying code. We aim for a high test coverage, with results consistently close to 100%. The unit tests are executed using `pytest` along with `pytest-cov` for test coverage reporting.
 
 To run the unit tests locally:
 
 `pytest` or `poetry run pytest`
-
-
-pytest --cov=ta_ml_model_api
-
 
 #### Testing Across Python Versions
 To verify compatibility with different versions of Python, the project is tested with Python 3.9, 3.10, 3.11, and 3.12. We use `tox` to automate testing across these Python versions.
