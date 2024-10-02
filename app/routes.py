@@ -9,6 +9,8 @@ import onnxruntime  # type: ignore
 from flask import Blueprint, Flask, Response, jsonify, request
 from pydantic import ValidationError
 
+from app.logger import setup_logger
+
 from .schemas import PredictInput
 
 app = Flask(__name__)
@@ -18,6 +20,8 @@ bp = Blueprint("api", __name__)
 # Load the ONNX model globally
 MODEL_PATH = "models/model.onnx"
 ort_session = onnxruntime.InferenceSession(MODEL_PATH)
+
+LOG = setup_logger("ta-ml-model-api")
 
 
 def init_routes(application):
@@ -59,12 +63,22 @@ def predict() -> Tuple[Response, int]:
     """
     validate_data = validate_input(json_data=request.get_json())
     if isinstance(validate_data, dict) and "error" in validate_data:
+        LOG.error("Validation failed: %s", validate_data["error"])
         return jsonify(validate_data), 400
 
     input_data = prepare_input_data(data=validate_data)
+    if input_data is None:
+        LOG.error("Input preparation failed. Invalid data format.")
+        return jsonify({"error": "Input preparation failed."}), 400
 
     # Run predict
     prediction, status_code = run_inference(input_data=input_data)
+
+    if status_code == 200:
+        LOG.info("Model inference successful. Prediction: %s", prediction)
+    else:
+        LOG.error("Model inference failed. Status code: %d", status_code)
+
     response = {
         "prediction": prediction,
     }
@@ -75,11 +89,14 @@ def predict() -> Tuple[Response, int]:
 
 def validate_input(json_data):
     """Validate the input data against the PredictInput schema."""
+    LOG.info("Starting input validation: %s", json_data)
     try:
         return PredictInput(**json_data)
     except ValidationError as e:
+        LOG.error("Validation error: %s", e.errors())
         return {"error": e.errors()}
     except Exception as e:
+        LOG.error("Unexpected error during validation: %s", str(e))
         return {"error": str(e)}
 
 
@@ -91,24 +108,40 @@ def prepare_input_data(data):
         data.Reactor_Volume,
         data.Material_A_Final_Concentration_Previous_Batch,
     ]
+
+    LOG.info("Preparing input data for model inference: %s", data)
+
     try:
+        LOG.debug("Processing inputs: %s", inputs)
+
         # Prepare input data to be used by the model
-        print(np.array([[item[0][0]] for item in inputs], dtype=np.float32))
-        return np.array([[item[0][0]] for item in inputs], dtype=np.float32)
-    except Exception:
+        prepared_data = np.array([[item[0][0]] for item in inputs], dtype=np.float32)
+
+        LOG.info("Input data prepared successfully: %s", prepared_data)
+
+        return prepared_data
+    except Exception as e:
+        LOG.error("Error during input data preparation: %s", str(e))
         return None
 
 
 def run_inference(input_data):
     """Run inference using the ONNX model."""
+
+    LOG.info("Starting model inference with input data: %s", input_data)
+
     try:
         ort_inputs = {
             ort_session.get_inputs()[i].name: input_data[i : i + 1]
             for i in range(len(input_data))
         }
+
+        LOG.debug("Prepared ONNX model inputs: %s", ort_inputs)
         output = ort_session.run(None, ort_inputs)
+
         return output[0].tolist(), 200  # Return prediction and no error
     except Exception as e:
+        LOG.error("Error during model inference: %s", str(e))
         return (
             jsonify({"error": "Invalid input for the ONNX model", "details": str(e)}),
             400,
