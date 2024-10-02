@@ -3,12 +3,12 @@
 import logging
 
 # https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
-END = "\33[0m"
-BOLD = "\33[1m"
-RED = "\33[31m"
-GREEN = "\33[32m"
-YELLOW = "\33[33m"
-BLUE = "\33[94m"
+END: str = "\33[0m"
+BOLD: str = "\33[1m"
+RED: str = "\33[31m"
+GREEN: str = "\33[32m"
+YELLOW: str = "\33[33m"
+BLUE: str = "\33[94m"
 
 
 class ColoredFormatter(logging.Formatter):
@@ -24,6 +24,13 @@ class ColoredFormatter(logging.Formatter):
     }
 
     def format(self, record: logging.LogRecord) -> str:
+        """
+        Format the log record with color based on log level.
+
+        :param record: The log record to format.
+
+        :return: Formatted log message.
+        """
         color = ColoredFormatter.LOG_LEVEL_COLOR.get(record.levelno, None)
 
         if color:
@@ -33,7 +40,17 @@ class ColoredFormatter(logging.Formatter):
 
 
 def setup_logger(name: str) -> logging.Logger:
-    """Configure and return logger"""
+    """
+    Configure and return a custom logger.
+
+    This function creates a logger with a specified name and adds
+    a console handler with a colored output format. The logger
+    is configured to display messages of level DEBUG and above.
+
+    :param name: The name of the logger to be created.
+
+    :return: The configured logger instance.
+    """
     # Create handle
     console_handler = logging.StreamHandler()
 
