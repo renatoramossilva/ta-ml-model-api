@@ -2,7 +2,7 @@
 
 # pylint: disable=broad-exception-caught
 
-from typing import Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import numpy as np
 import onnxruntime  # type: ignore
@@ -87,8 +87,17 @@ def predict() -> Tuple[Response, int]:
     return jsonify(response), status_code
 
 
-def validate_input(json_data):
-    """Validate the input data against the PredictInput schema."""
+def validate_input(json_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Validate the input data against the PredictInput schema.
+
+    :param json_data: The input JSON data to validate.
+            It should contain the required fields for the prediction
+            as defined in the PredictInput schema.
+
+    :return: A dictionary containing the validated input data
+            if valid, or an error dictionary if validation fails.
+    """
     LOG.info("Starting input validation: %s", json_data)
     try:
         return PredictInput(**json_data)
@@ -100,8 +109,23 @@ def validate_input(json_data):
         return {"error": str(e)}
 
 
-def prepare_input_data(data):
-    """Prepare input data for model inference."""
+def prepare_input_data(data: Dict[str, Any]) -> Optional[np.ndarray]:
+    """
+    Prepare input data for model inference.
+
+    This function extracts the required input parameters from the
+    provided data dictionary and converts them into a NumPy array
+    suitable for model inference.
+
+    :param data: A dictionary containing the required input parameters for the model, including:
+        - Material_A_Charged_Amount
+        - Material_B_Charged_Amount
+        - Reactor_Volume
+        - Material_A_Final_Concentration_Previous_Batch
+
+    :return:A 2D NumPy array prepared for model inference if successful,
+        or None if there was an error during preparation.
+    """
     inputs = [
         data.Material_A_Charged_Amount,
         data.Material_B_Charged_Amount,
@@ -125,8 +149,22 @@ def prepare_input_data(data):
         return None
 
 
-def run_inference(input_data):
-    """Run inference using the ONNX model."""
+def run_inference(input_data: Any) -> Tuple[list, int]:
+    """
+    Run inference using the ONNX model.
+
+    This function takes input data, prepares it for the ONNX model,
+    and runs the inference. It returns the model's output and the
+    corresponding HTTP status code.
+
+    :param input_data: The input data to be used for inference,
+        expected to be a NumPy array or a structure compatible
+        with the ONNX model.
+
+    :return: A tuple containing the model's prediction as a
+        list and the HTTP status code. The status code is 200 for
+        successful inference and 400 for errors.
+    """
 
     LOG.info("Starting model inference with input data: %s", input_data)
 
