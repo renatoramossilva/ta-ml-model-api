@@ -22,3 +22,8 @@ def test_home(client: FlaskClient) -> None:
     """Test the home route for the expected message."""
     response = client.get("/")
     assert response.data == b"Hello, Flask!"
+
+
+def test_error():
+    """Force pytest error to validate gh action"""
+    assert False
